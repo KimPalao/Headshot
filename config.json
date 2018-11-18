@@ -1,0 +1,14 @@
+{
+  "name": {
+    "first": "Kim",
+    "middle": "Senen",
+    "last": "Palao"
+  },
+  "age": 18,
+  "sex": "Male",
+  "font": {
+    "names": [
+      "Microsoft YaHei UI Light"
+    ]
+  }
+}
