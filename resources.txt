@@ -42,3 +42,6 @@ https://stackoverflow.com/questions/24788003/how-do-you-resize-an-image-in-pytho
 
 Load a numpy array as an image
 https://github.com/motmot/pygarrayimage/blob/master/examples/arrayimage_display.py
+
+Rotate sprite
+https://ubuntuforums.org/showthread.php?t=1587500
