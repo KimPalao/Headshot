@@ -2,6 +2,9 @@ from .event_widget import EventWidget
 from pyglet.sprite import Sprite
 from pyglet.image import load
 from math import degrees, sin, cos, sqrt, acos, pi, asin
+import cv2 as cv
+from scipy.ndimage import rotate
+from numpy import ndarray
 
 
 class Projectile(EventWidget, Sprite):
@@ -9,7 +12,9 @@ class Projectile(EventWidget, Sprite):
         """
         """
         print(args, kwargs)
-        img = load(kwargs.pop('image_src'))
+        self.image_src = kwargs.pop('image_src')
+        img = load(self.image_src)
+        self.np = cv.imread(self.image_src)
         # self.sprite = Sprite(img, x=kwargs.get('x', 0), y=kwargs.get('y', 0))
         # self._x = self.sprite.x
         # self._y = self.sprite.y
@@ -22,27 +27,25 @@ class Projectile(EventWidget, Sprite):
 
     def rotate(self, radians):
         self.radians = radians
-        self.rotation += -degrees(radians)
+        self.rotation += -degrees(self.radians)
+        self.np = rotate(self.np, degrees(self.radians))
 
-    def point(self, x, y):
+    def point(self, x: int, y: int) -> None:
         distance = sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
         cos_x = x / distance
-        radians = abs(acos(cos_x))
+        sin_y = y / distance
+        if -pi*2 <= sin_y <= pi*2:
+            radians = abs(asin(sin_y))
+        elif 0 <= cos_x <= pi:
+            radians = abs(acos(cos_x))
+        else:
+            raise ValueError
         if x <= self.x and y >= self.y:  # Q2
             radians = pi - radians
         elif x <= self.x and y <= self.y:
             radians += pi
         elif x >= self.x and y <= self.y:
-            radians = 2*pi - radians
-
-        # if y <= self.y:
-        #     radians += pi
-        #     if x >= self.x:
-        #         radians += pi/2
-        # elif x <= self.x:
-        #     radians += pi/2
-        #     if y >= self.y:
-        #         radians += pi/2
+            radians = 2 * pi - radians
         self.rotate(radians)
 
     def forward(self):
@@ -50,6 +53,21 @@ class Projectile(EventWidget, Sprite):
         y = sin(self.radians) * self.speed
         self.x += x
         self.y += y
+        window = self.get_window()
+        if self.x > window.width or self.y > window.height:
+            self.delete()
+
+    @property
+    def scale(self):
+        return self._scale
+
+    @scale.setter
+    def scale(self, value):
+        print(self.x, self.y, self.width, self.height)
+        self._scale = value
+        self._update_position()
+        print(self.x, self.y, self.width, self.height)
+
 
     # def draw(self):
     #     self.sprite.draw()

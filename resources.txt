@@ -45,3 +45,5 @@ https://github.com/motmot/pygarrayimage/blob/master/examples/arrayimage_display.
 
 Rotate sprite
 https://ubuntuforums.org/showthread.php?t=1587500
+
+https://stackoverflow.com/questions/42402303/opencv-determine-area-of-intersect-overlap
