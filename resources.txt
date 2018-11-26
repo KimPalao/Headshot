@@ -47,3 +47,7 @@ Rotate sprite
 https://ubuntuforums.org/showthread.php?t=1587500
 
 https://stackoverflow.com/questions/42402303/opencv-determine-area-of-intersect-overlap
+
+https://docs.opencv.org/3.4/d7/d4d/tutorial_py_thresholding.html
+
+https://stackoverflow.com/questions/3224561/crop-image-to-smallest-size-by-removing-transparent-pixels-in-java

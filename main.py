@@ -1,77 +1,113 @@
-import os
-from datetime import datetime
-
-import cv2
 import json
-import pyglet
+import traceback
+import time
+
+import cv2 as cv
+
+from random import randint
+
+from typing import List
+
+from pyglet.graphics import Batch
+from pyglet.window import get_platform
+from pyglet import options, gl, clock, app
+from pygarrayimage.arrayimage import ArrayInterfaceImage
 from pyglet.window import FPSDisplay
 from widgets.event_window import EventWindow
-from widgets.button import Button
-from widgets.textbox import TextBox
+from widgets.facecam import Facecam
+from widgets.player import Player
+from widgets.projectile import Projectile
 
+options['debug_gl'] = False
+gl.glEnable(gl.GL_BLEND)
+gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
 with open('config.json') as config_file:
     config = json.loads(config_file.read())
-print(config)
 
-if config['font']['names']:
-    print(tuple(config['font']['names']))
-    sans_serif = pyglet.font.load(tuple(config['font']['names']), 16)
-    # sans_serif = pyglet.font.load('Microsoft YaHei UI Light', 16)
+# Window Settings
+platform = get_platform()
+display = platform.get_default_display()
+screen = display.get_default_screen()
+window = EventWindow(width=screen.width, height=screen.height)
+window.maximize()
 
-# window = pyglet.window.Window()
-window = EventWindow()
-pyglet.gl.glClearColor(1, 1, 1, 1)
+face_cascade = cv.CascadeClassifier('venv/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
 
-label = pyglet.text.Label(f'Hello {config["name"]["first"]}!',
-                          font_size=36,
-                          x=window.width // 2,
-                          anchor_x='center',
-                          anchor_y='center',
-                          color=(0, 0, 0, 255))
-button_press_label = pyglet.text.Label('You haven\'t pressed anything yet', color=(0, 0, 0, 255))
-button = Button('Take a picture', color=(0, 0, 0, 255), padding=(5,))
-
+facecam = Facecam(face_cascade).start()
+img = facecam.read()
+aii = ArrayInterfaceImage(img, 'BGR')
+image = aii.texture
+image.x = (window.width - image.width) / 2
+image.y = (window.height - image.height) / 2
 fps_display = FPSDisplay(window)
 
+soul = Player(image_src='chihiro.png', x=window.width / 2, y=window.height / 2)
+soul.scale = 1.2
 
-text_box = TextBox(100, x=window.width//2, y=window.height//2)
-# text_box.x = (window.width - text_box.width) // 2
-# text_box.y = (window.height - text_box.height) // 2
-print(text_box.x, text_box.y, text_box.underline)
-
-
-def reposition_button_press_label():
-    button_press_label.x = window.width // 2 - button_press_label.content_width // 2
-    button_press_label.y = button_press_label.content_height
-
-
-@button.event('on_mouse_press')
-def test(x, y, btn, mod):
-    date: datetime = datetime.now()
-    filename: str = os.path.join('capture', f'{date:%Y_%m_%d__%H%I%S}.jpg')
-    print(filename)
+batch = Batch()
+projectiles: List[Projectile] = []
 
 
 @window.event
 def on_draw():
     window.clear()
-    # label.draw()
-    button.draw()
-    reposition_button_press_label()
-    button_press_label.draw()
+    image.blit(
+        image.x,
+        image.y,
+        0)
+    aii.view_new_array(facecam.read())
     fps_display.draw()
-    text_box.draw()
+    soul.draw()
+    batch.draw()
+    for projectile in projectiles:
+        if projectile.active:
+            projectile.forward()
+            if soul.check_for_collision(projectile):
+                projectile.delete()
+                print(soul.take_damage(projectile.damage))
 
 
-@window.event
-def on_key_press(symbol: int, modifiers: int):
-    button_press_label.text = f'You pressed {chr(symbol)}'
-    reposition_button_press_label()
+@facecam.event('on_face_move')
+def follow_face(x, y, width, height):
+    print('Face moving')
+    new_x = image.x + x + width // 2
+    new_y = image.y + y + height // 2
+    print(new_x, new_y)
+    soul.move(new_x, new_y)
 
 
-# window.push_handlers(text_box, button)
-window.push_handlers(button, text_box)
+window.push_handlers(facecam)
+
+
+def randomize_projectiles(dt):
+    x = randint(0, window.width)
+    y = randint(0, window.height)
+    projectile = Projectile(image_src='images/candy_cane.png', x=x, y=y, damage=10.0, batch=batch, speed=5,
+                            bg=(255, 255, 255))
+    projectile.scale = 2
+    projectile.point(soul.x, soul.y)
+    projectiles.append(projectile)
+
 
 if __name__ == '__main__':
-    pyglet.app.run()
+    count = 0
+    timer = time.time()
+    clock.schedule_interval(randomize_projectiles, 2)
+    try:
+        while 1:
+            clock.tick()
+            if window.has_exit:
+                window.close()
+                break
+            for window in app.windows:
+                window.switch_to()
+                window.dispatch_events()
+                window.dispatch_event('on_draw')
+                window.flip()
+                count += 1
+            time.sleep(1 / 120)
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
+        input()
