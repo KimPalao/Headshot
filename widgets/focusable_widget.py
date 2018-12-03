@@ -27,7 +27,14 @@ class Focusable(EventWidget):
 
         self._on_focus = new_on_focus
 
-    def on_mouse_press(self, x, y, button, modifiers):
+    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int) -> None:
+        """
+
+        :param x:
+        :param y:
+        :param button:
+        :param modifiers:
+        """
         # TODO: Test out behavior when implementing both Focusable and Clickable
         if self.check_if_in_bounds(x, y):
             self.focused = True

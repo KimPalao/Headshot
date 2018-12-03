@@ -26,7 +26,7 @@ class EventWidget(EventDispatcher, ABC):
         :param y: Y-coordinate with respect to the origin (bottom left)
         :return: bool
         """
-        return x in range(self.x, self.x + self.width) and y in range(self.y, self.y + self.height)
+        return self.x <= x <= self.x + self.width and self.y <= y <= self.y + self.height
 
     def event(self, *args):
         """

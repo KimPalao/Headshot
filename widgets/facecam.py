@@ -10,9 +10,11 @@ from .event_widget import EventWidget
 
 class Facecam(WebcamVideoStream, EventWidget):
     _on_face_move: Callable = None
+    thread: Thread = None
 
-    def __init__(self, face_cascade, src=0, *args):
+    def __init__(self, face_cascade=None, detector=None, src=0, *args):
         self.face_cascade = face_cascade
+        self.detector = detector
         super().__init__(src=src, *args)
 
     def update(self):
@@ -21,17 +23,19 @@ class Facecam(WebcamVideoStream, EventWidget):
                 return
 
             (self.grabbed, self.frame) = self.stream.read()
-            self.frame = cv.flip(self.frame, -1)
-            gray = cv.cvtColor(self.frame, cv.COLOR_BGR2GRAY)
-            faces = self.face_cascade.detectMultiScale(gray, 1.3, 5)
-            for (x, y, w, h) in faces:
-                # cv.rectangle(self.frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-                self._on_face_move(x, y, w, h)
+            # self.frame = cv.flip(self.frame, -1)
+            gray = cv.cvtColor(self.frame, cv.COLOR_BGR2GRAY)  # Convert to grayscale
+            if self.face_cascade:  # If using OpenCV's Haar cascade
+                faces = self.face_cascade.detectMultiScale(gray, 1.3, 5, flags=cv.CASCADE_SCALE_IMAGE)
+                for (x, y, w, h) in faces:
+                    cv.rectangle(self.frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                    if self._on_face_move:
+                        self._on_face_move(x, y, w, h)
 
     def start(self):
-        t = Thread(target=self.update, name=self.name, args=())
-        t.daemon = True
-        t.start()
+        self.thread = Thread(target=self.update, name=self.name, args=())
+        self.thread.daemon = True
+        self.thread.start()
         return self
 
     def _on_face_move_base(self, x: int, y: int, w: int, h: int) -> None:
@@ -57,3 +61,12 @@ class Facecam(WebcamVideoStream, EventWidget):
     @on_face_move.setter
     def on_face_move(self, func):
         self._on_face_move = func
+
+    def __del__(self):
+        self.stop()
+        self.stream.release()
+
+    def clean(self):
+        self.stop()
+        self.stream.release()
+        del self

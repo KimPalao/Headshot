@@ -29,14 +29,13 @@ class Interface(EventWidget, ABC):
     def on_init(self, func):
         self._on_init = func
 
-    def bind(self, window):
-        self.window = window
-        self.on_bind()
-
     @abstractmethod
     def on_draw(self):
         pass
 
     @abstractmethod
-    def on_bind(self):
+    def resize(self):
         pass
+
+    def clean(self):
+        del self

@@ -1,42 +1,56 @@
 from pyglet.clock import schedule_interval
 
 from shapes.rectangle import Rectangle
+from widgets.stack_layout import Orientation
 
 
-class HealthBar:
-    max_health: int
+class Bar:
+    max: int
 
-    def __init__(self, health, width, height, x, y):
-        self.max_health = health
-        self.health = self.max_health
+    def __init__(self, value, maximum, width, height, x, y, orientation=Orientation.HORIZONTAL):
+        self.value = value
+        self.max = maximum
         self.width = width
         self.height = height
         self.x = x
         self.y = y
-        self.max_health_rectangle = Rectangle(
+        self.orientation = orientation
+        self.max_rectangle = Rectangle(
             x=(self.x - self.width / 2),
             y=(self.y - self.height / 2),
             width=self.width,
             height=self.height,
-            color=(255, 0, 18, 255)
+            color=(123, 17, 19, 255)  # UP Maroon
+            # color=(255, 0, 18, 255)
         )
-        self.health_rectangle = Rectangle(
+        self.rectangle = Rectangle(
             x=(self.x - self.width / 2),
             y=(self.y - self.height / 2),
             width=self.width,
             height=self.height,
-            color=(0, 179, 44, 255)
+            color=(1, 68, 33, 255)  # UP Forest Green
+            # color=(0, 179, 44, 255)
         )
-        schedule_interval(self.update_health_bar, 1/30)
+        schedule_interval(self.update_bar, 1 / 30)
 
-    def update_health_bar(self, dt):
-        difference = self.health_rectangle.width - (self.width * (self.health / self.max_health))
-        while self.health_rectangle.width >= self.width * (self.health / self.max_health):
-        # for i in range(100):
-            self.health_rectangle.width -= self.max_health_rectangle.width / 10000
+    def update_bar(self, dt):
+        if self.orientation == Orientation.HORIZONTAL:
+            if self.value == 0:
+                self.rectangle.width = 0
+            else:
+                self.rectangle.width = self.width * (self.value / self.max)
+        elif self.orientation == Orientation.VERTICAL:
+            if self.value == 0:
+                self.rectangle.height = 0
+            else:
+                self.rectangle.height = self.height * (self.value / self.max)
+        # difference = self.rectangle.width - (self.width * (self.value / self.max))
+        # while self.rectangle.width >= self.width * (self.value / self.max):
+        #     for i in range(100):
+        # self.rectangle.width -= self.max_rectangle.width / 10000
 
-    def set(self, health):
-        self.health = health
+    def set(self, value):
+        self.value = value
         # self.health_rectangle.width = self.width * (self.health / self.max_health)
         # schedule_once(self.update_health_bar, 0)
         # schedule_interval(self.update_health_bar, 1/60)
@@ -49,5 +63,19 @@ class HealthBar:
         #     sleep(1/1000)
 
     def draw(self):
-        self.max_health_rectangle.draw()
-        self.health_rectangle.draw()
+        self.max_rectangle.draw()
+        self.rectangle.draw()
+
+    def __iadd__(self, other: int):
+        self.set(min(self.value + other, self.max))
+        return self
+
+    def __isub__(self, other: int):
+        self.set(self.value - other)
+        return self
+
+    def move(self, x, y):
+        self.rectangle.x = x
+        self.max_rectangle.x = x
+        self.rectangle.y = y
+        self.max_rectangle.y = y

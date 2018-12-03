@@ -1,10 +1,9 @@
 import time
-from widgets.rectangle import Rectangle
+from shapes.rectangle import Rectangle
 import cv2
 import pyglet
 from pyglet import gl
 from pyglet.window import FPSDisplay
-from widgets.facecam import Facecam
 from pygarrayimage.arrayimage import ArrayInterfaceImage
 
 gl.glEnable(gl.GL_BLEND)

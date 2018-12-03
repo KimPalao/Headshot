@@ -1,26 +1,22 @@
-from math import pi
-
-from widgets.projectile import Projectile
-from widgets.player import Player
+from game_objects.projectile import Projectile
+from game_objects.player import Player
+from pyglet import clock
 from widgets.event_window import EventWindow
 import pyglet
 import cv2 as cv
-import numpy as np
 import time
-from matplotlib import pyplot as plt
-from config import config
 
 window = EventWindow(fullscreen=True)
 # soul_image = pyglet.image.load('soul.png')
 # soul = pyglet.sprite.Sprite(soul_image)
-soul = Player(image_src='soul.png')
+soul = Player(src='soul.png')
 print(soul.width, soul.height)
 print(window.width / 2, window.height / 2)
 soul.move(window.width / 2 - soul.width, window.height / 2 - soul.height)
 soul.scale = 1.3
 print('Soul: ', soul.x, soul.y, soul.width, soul.height)
 soul_np = cv.imread('soul.png')
-projectile = Projectile(image_src='projectiles/dull_knife.png', speed=10, x=window.width * 0.7, y=window.height)
+projectile = Projectile(src='projectiles/dull_knife.png', speed=10, x=window.width * 0.7, y=window.height)
 # projectile.x = window.width / 3
 # projectile.rectangle.x = projectile.x
 # projectile.y = window.height / 2
@@ -44,7 +40,7 @@ def move_forward(dt):
               projectile.get_right_bound(),
               soul.get_left_bound(),
               )
-        pyglet.clock.unschedule(move_forward)
+        clock.unschedule(move_forward)
 
 
 start = time.time()

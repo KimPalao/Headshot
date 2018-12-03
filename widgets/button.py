@@ -3,7 +3,7 @@ from pyglet.text import Label
 
 from .clickable_widget import Clickable
 from .hoverable_widget import Hoverable
-from .rectangle import Rectangle
+from shapes.rectangle import Rectangle
 
 
 class Button(Label, Clickable, Hoverable):

@@ -1,9 +1,9 @@
-from widgets.projectile import Projectile
+from game_objects.projectile import Projectile
 from matplotlib import pyplot as plt
 from math import pi
 
 if __name__ == '__main__':
-    p = Projectile(image_src='projectiles/dull_knife.png')
+    p = Projectile(src='projectiles/dull_knife.png')
     images = 24
     divisor = 6
     ratio = pi/divisor

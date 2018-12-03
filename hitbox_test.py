@@ -1,26 +1,26 @@
 import pyglet
-from widgets.projectile import Projectile
-from widgets.player import Player
-from math import pi, sqrt, cos, sin, acos, asin
+from game_objects.projectile import Projectile
+from game_objects.player import Player
+from math import pi
 
 window = pyglet.window.Window(fullscreen=True)
 # soul_image = pyglet.image.load('soul.png')
 # soul = pyglet.sprite.Sprite(soul_image, x=window.width / 2, y=window.height / 2)
 # soul = Player
 # soul.scale = 0.1
-soul = Player(image_src='images/santa.gif')
+soul = Player(src='images/santa.gif')
 print(soul.width, soul.height)
 print(window.width / 2, window.height / 2)
 soul.move(window.width / 2 - soul.width, window.height / 2 - soul.height)
 soul.scale = 1.3
 print('Soul: ', soul.x, soul.y, soul.width, soul.height)
-# projectile = Projectile(image_src='projectiles/dull_knife.png', speed=10, x=window.width * 0.7, y=window.height)
+# projectile = Projectile(src='projectiles/dull_knife.png', speed=10, x=window.width * 0.7, y=window.height)
 
 
-projectile_one = Projectile(image_src='images/candy_cane.png', speed=10)
-projectile_two = Projectile(image_src='images/candy_cane.png', x=window.width, y=window.height, speed=10)
-projectile_three = Projectile(image_src='images/candy_cane.png', x=window.width, speed=10)
-projectile_four = Projectile(image_src='images/candy_cane.png', y=window.height, speed=10)
+projectile_one = Projectile(src='images/candy_cane.png', speed=10)
+projectile_two = Projectile(src='images/candy_cane.png', x=window.width, y=window.height, speed=10)
+projectile_three = Projectile(src='images/candy_cane.png', x=window.width, speed=10)
+projectile_four = Projectile(src='images/candy_cane.png', y=window.height, speed=10)
 
 # projectile_one.scale = .5
 # projectile_two.scale = .5

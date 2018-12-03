@@ -3,7 +3,7 @@ Demo for the face tracking
 """
 
 import time
-from widgets.rectangle import Rectangle
+from shapes.rectangle import Rectangle
 import cv2
 import pyglet
 pyglet.options['debug_gl'] = False
@@ -16,7 +16,7 @@ gl.glEnable(gl.GL_BLEND)
 gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
 face_cascade = cv2.CascadeClassifier('venv/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
-facecam = Facecam(face_cascade, src='test_vid.mp4').start()
+facecam = Facecam(face_cascade).start()
 img = facecam.read()
 aii = ArrayInterfaceImage(img, 'BGR')
 soul = pyglet.image.load('chihiro.png')
@@ -40,7 +40,6 @@ def on_draw():
 
 
 def follow_face(x, y, width, height):
-    print('HI!')
     soul_sprite.x = x + (width//2) - soul_sprite.width//2
     soul_sprite.y = y + (height//2) - soul_sprite.height//2
 
