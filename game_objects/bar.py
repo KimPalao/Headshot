@@ -1,7 +1,6 @@
-from time import sleep
-from pyglet.clock import schedule_once, schedule_interval
+from pyglet.clock import schedule_interval
 
-from .rectangle import Rectangle
+from shapes.rectangle import Rectangle
 
 
 class HealthBar:
@@ -19,14 +18,14 @@ class HealthBar:
             y=(self.y - self.height / 2),
             width=self.width,
             height=self.height,
-            color=(255, 0, 18)
+            color=(255, 0, 18, 255)
         )
         self.health_rectangle = Rectangle(
             x=(self.x - self.width / 2),
             y=(self.y - self.height / 2),
             width=self.width,
             height=self.height,
-            color=(0, 179, 44)
+            color=(0, 179, 44, 255)
         )
         schedule_interval(self.update_health_bar, 1/30)
 

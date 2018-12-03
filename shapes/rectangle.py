@@ -4,8 +4,8 @@ from pyglet.gl import GL_QUADS
 
 class Rectangle:
     def __init__(self, *args, **kwargs):
-        self._x = kwargs.get('x', None)
-        self._y = kwargs.get('y', None)
+        self._x = kwargs.get('x', 0)
+        self._y = kwargs.get('y', 0)
         self._width = kwargs.get('width', None)
         self._height = kwargs.get('height', None)
         self.rgb = kwargs.get('color', (0, 0, 0))

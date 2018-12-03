@@ -1,4 +1,4 @@
-import datetime
+import time
 from typing import Tuple
 
 from .event_widget import EventWidget
@@ -19,19 +19,22 @@ class Projectile(EventWidget, Sprite):
     active: bool = True
     damage: int = 1
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, src, background=None, speed=1, damage=1, acceleration=0, *args, **kwargs):
         """
         """
-        self.image_src = kwargs.pop('image_src')
-        self.background = kwargs.pop('bg', False)
-        img = load(self.image_src)
-        self.np = cv.imread(self.image_src)
-        self.speed = kwargs.pop('speed', 1)
-        self.damage = kwargs.pop('damage', self.damage)
+        self.src = src
+        self.background = background
+        img = load(self.src)
+        self.np = cv.imread(self.src)
+        self.speed = speed
+        self.acceleration = acceleration
+        self.damage = damage
         super().__init__(img, *args, **kwargs)
         self.radians = 0
         self.image.anchor_x = self.image.width / 2
         self.image.anchor_y = self.image.height / 2
+        self.init_time = time.time()
+
         self.update(x=self.x, y=self.y)
         self.refresh_threshold()
         if self.background:
@@ -155,8 +158,15 @@ class Projectile(EventWidget, Sprite):
         self.rotate(radians)
 
     def forward(self):
-        x = cos(self.radians) * self.speed
-        y = sin(self.radians) * self.speed
+        time_delta = (time.time() - self.init_time)
+        # This allows for boomerang movement, don't remove yet
+        # multiplier = (time_delta * self.acceleration - self.speed or self.speed)
+
+        # Speed derived from the acceleration formula
+        multiplier = (time_delta * self.acceleration + self.speed or self.speed)
+        print(f'multiplier: {multiplier}')
+        x = cos(self.radians) * multiplier
+        y = sin(self.radians) * multiplier
         self.x += x
         self.y += y
         if self.rectangle:

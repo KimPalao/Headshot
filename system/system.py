@@ -11,3 +11,4 @@ def plot_pictures(rows, cols, *images):
         except Exception as e:
             print(f'Crashed at: {i} {e}')
     plt.show()
+
