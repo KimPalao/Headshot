@@ -8,6 +8,7 @@ from typing import List
 from pyglet.graphics import Batch
 from pyglet.window import Window
 
+from audio import projectile_generate_one, sword_slice, sword_sharpen
 from game_objects.projectile import Projectile
 from system import system
 
@@ -63,6 +64,7 @@ class BasicAttack(AttackPattern):
             projectile = Projectile(src=join('images', 'bonus-11.png'), x=x, y=y, damage=self.base_damage,
                                     speed=self.base_speed, acceleration=self.base_acceleration, batch=self.batch)
             player = system.get_player()
+            projectile_generate_one.play()
             if player:
                 projectile.point(player.x, player.y)
                 self.projectiles.append(projectile)
@@ -92,6 +94,7 @@ class PinwheelAttack(AttackPattern):
             self.set_movement(projectile, diameter)
 
             self.projectiles.append(projectile)
+        sword_sharpen.play()
 
     @staticmethod
     def set_movement(projectile: Projectile, diameter: int):

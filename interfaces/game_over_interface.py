@@ -1,5 +1,6 @@
 from pyglet.text import Label
 
+from audio import explosion
 from fonts.fonts import press_start_2p
 from interfaces.interface import Interface
 from system import system
@@ -21,6 +22,7 @@ class GameOverInterface(Interface):
         window = system.get_window()
         window.on_key_press = self.game_over_menu.on_key_press
         self.game_over_menu.focused = True
+        explosion.play()
 
     def on_draw(self):
         self.game_over_label.draw()

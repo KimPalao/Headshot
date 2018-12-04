@@ -4,7 +4,7 @@ from os.path import join
 import cv2 as cv
 import numpy as np
 # from pyglet.clock import schedule_interval
-
+from audio import laser
 from game_objects.powerup import Powerup
 from game_objects.projectile import Projectile
 from game_objects.bar import Bar
@@ -144,6 +144,7 @@ class Player(Projectile):
         self.health_bar.set(self.health)
 
     def attack(self):
+        laser.play()
         print(system.get_enemy())
         if system.get_enemy():
             self.projectile = Projectile(src=join('images', 'laser-04.png'), x=self.x, y=self.y, damage=10, speed=5,

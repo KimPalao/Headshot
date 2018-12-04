@@ -9,7 +9,8 @@ def set_config(key, value):
 
     config[key] = value
     with open('config.json', 'w') as config_file:
-        config_file.write(json.dumps(config))
+        json.dump(config, config_file, indent=4)
+        # config_file.write(json.dumps(config))
     return value
 
 

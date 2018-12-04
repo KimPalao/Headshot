@@ -1,1 +1,4 @@
-{"name": "Kim", "age": 18, "enemy": 2, "sex": "Male", "font": {"names": ["Microsoft YaHei UI Light"]}, "debug": true}
+{
+    "enemy": 0,
+    "control": 0
+}
