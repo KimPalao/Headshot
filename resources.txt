@@ -55,3 +55,5 @@ https://stackoverflow.com/questions/3224561/crop-image-to-smallest-size-by-remov
 https://www.pyimagesearch.com/2018/04/02/faster-facial-landmark-detector-with-dlib/
 
 https://www.gamedev.net/forums/topic/539998-pyglet-animation-problem/
+
+https://www.youtube.com/watch?v=TJ8_Ltk2f2g

@@ -43,3 +43,26 @@ h1, h2, h3, h4, h5, h6 {
   color: #fff;
   text-align: center;
 }
+
+figure {
+  & > img {
+    width: 100%;
+  }
+  & > figcaption {
+    text-align: center;
+    font-family: 'Press Start 2P', 'Microsoft YaHei UI Light', sans-serif;
+    color: white;
+  }
+}
+
+footer {
+  padding: 20px;
+  text-align: center;
+  font-family: 'Microsoft YaHei UI Light', sans-serif;
+  color: white;
+  background: rgba(0, 0, 0, 0.4)
+}
+
+em {
+  color: #fff;
+}
