@@ -15,6 +15,7 @@ from pyglet.window import FPSDisplay, key
 
 from pygarrayimage.arrayimage import ArrayInterfaceImage
 
+import audio
 from game_objects.attack_pattern import AttackPattern
 from game_objects.enemy import AlienEnemy, AlienDog, Enemy, enemies
 from game_objects.powerup import Powerup, HealPowerup, powerups
@@ -97,7 +98,7 @@ class GameInterface(Interface):
 
             window.push_handlers(self.facecam)
 
-        self.player = Player(src='images/ufo.png', background=(255, 255, 255, 255))
+        self.player = Player(src='images/ufo.png')
         self.border = Rectangle(
             width=(500 if not self.image else self.image.width) + 10,
             height=(500 if not self.image else self.image.height) + 10,
@@ -119,12 +120,8 @@ class GameInterface(Interface):
         for func, interval in self.scheduled_functions:
             clock.schedule_interval(func, interval)
         self.fps_display = FPSDisplay(window)
-        # self.enemy = AlienEnemy(self.batch, speed=100)
         self.generate_enemy(0)
-
         self.resize()
-        # self.attack = PinwheelAttack(self.player, batch=self.batch)
-        # self.attack = RainAttack(self.player, batch=self.batch)
 
     def generate_enemy(self, dt):
         enemy_index = config.get_config('enemy')
@@ -159,7 +156,6 @@ class GameInterface(Interface):
         if self.image:
             self.image.x = (window.width - self.image.width) / 2
             self.image.y = (window.height - self.image.height) / 2
-        # self.border.x = (window.width - self.border.width) / 2
         self.border.x = window.width / 2 * 0.3
         self.border.y = (window.height - self.border.height) / 2
 

@@ -61,12 +61,12 @@ explosion = media.StaticSource(
     )
 )
 
-win = media.StaticSource(
+music = media.StaticSource(
     media.load(
         join(
             'sound_FX',
-            'freesound.org',
-            'win.wav'
+            'Orbit-Beat-130',
+            'music.wav'
         )
     )
 )

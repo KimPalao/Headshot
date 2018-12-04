@@ -4,6 +4,7 @@ import time
 from pyglet import options, gl, app
 from pyglet.window import get_platform, key
 
+import audio
 from interfaces.main_interface import MainInterface
 from widgets.event_window import EventWindow
 from pyglet import clock
@@ -19,13 +20,14 @@ gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 platform = get_platform()
 display = platform.get_default_display()
 screen = display.get_default_screen()
-window = EventWindow(width=screen.width, height=screen.height, resizable=True)
+window = EventWindow(width=screen.width, height=screen.height, resizable=True, caption='Headshot')
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
 window.maximize()
 
 
 if __name__ == '__main__':
+    audio.music.play()
     window.load_interface(MainInterface())
     # window.load_interface(GameInterface())
     try:

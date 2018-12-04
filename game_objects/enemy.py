@@ -16,7 +16,6 @@ from system import system
 
 class Enemy(Projectile):
     attack_pattern: AttackPattern = None
-    name_tag: Label = None
     health: int = 100
     speed: int = 10
     on_die: Callable = None
@@ -33,9 +32,6 @@ class Enemy(Projectile):
             value_color=(255, 255, 0, 255),
             max_color=(0, 0, 0, 255)
         )
-        self.name_tag = Label(type(self).__name__)
-        self.name_tag.anchor_x = 'center'
-        self.name_tag.anchor_y = 'center'
         self.scheduled_functions = (
             (self.change_position, 1),
             (self.move_around, 1 / 60)
@@ -74,7 +70,6 @@ class Enemy(Projectile):
             return
         super().draw()
         self.attack_pattern.draw()
-        self.name_tag.draw()
         self.health_bar.draw()
 
     def move(self, x, y):
@@ -82,15 +77,12 @@ class Enemy(Projectile):
             return
         super().move(x, y)
         self.health_bar.move(self.x - self.width / 2, self.y - self.height / 2 - 25)
-        self.name_tag.x = self.x - self.width / 2
-        self.name_tag.y = self.y + self.height / 2
         print(self.health_bar, self.health_bar.x, self.health_bar.y)
 
     def clean(self):
         for func, interval in self.scheduled_functions:
             clock.unschedule(func)
         print('Unscheduling, hopefully')
-        self.name_tag.delete()
         self.delete()
         self.attack_pattern.stop()
 

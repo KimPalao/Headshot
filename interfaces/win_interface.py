@@ -1,7 +1,10 @@
+from os.path import join
+
+from pyglet import media
 from pyglet.text import Label
 
 import menus
-from audio import win
+import audio
 from fonts.fonts import press_start_2p
 from interfaces.interface import Interface
 from system import system
@@ -10,6 +13,7 @@ from system import system
 class WinInterface(Interface):
     win_label: Label = None
     game_over_menu: menus.menu.Menu = None
+    drawn = False
 
     def __init__(self):
         self.game_over_label = Label('YOU WIN', font_name=press_start_2p, font_size=48)
@@ -22,7 +26,15 @@ class WinInterface(Interface):
         window = system.get_window()
         window.on_key_press = self.game_over_menu.on_key_press
         self.game_over_menu.focused = True
-        win.play()
+        # media.load(
+        #     join(
+        #         'sound_FX',
+        #         'freesound.org',
+        #         'win.wav'
+        #     ),
+        #     streaming=False
+        # ).play()
+        # win.play()
 
     def on_draw(self):
         self.game_over_label.draw()
