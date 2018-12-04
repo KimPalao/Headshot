@@ -142,7 +142,7 @@ class RainAttack(AttackPattern):
         projectiles = randint(0, self.projectile_per_attack)
         for i in range(projectiles):
             # Generate projectiles right above the player
-            x = randint(interface.border.x, interface.border.x + interface.border.width)
+            x = randint(int(interface.border.x), int(interface.border.x + interface.border.width))
             y = window.height - 100
             projectile = Projectile(src=join('images', 'meteor_sequence.png'), x=x, y=y, damage=self.base_damage,
                                     speed=self.base_speed, acceleration=self.base_acceleration, batch=self.batch,
