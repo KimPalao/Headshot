@@ -29,7 +29,9 @@ class Enemy(Projectile):
             width=self.width,
             height=25,
             x=self.x,
-            y=self.y - 25
+            y=self.y - 25,
+            value_color=(255, 255, 0, 255),
+            max_color=(0, 0, 0, 255)
         )
         self.name_tag = Label(type(self).__name__)
         self.name_tag.anchor_x = 'center'
@@ -132,23 +134,23 @@ class AlienShip(Enemy):
 
 
 class AlienDog(Enemy):
-    health = 40
+    health = 50
 
     def __init__(self, batch, *args, **kwargs):
         super().__init__(src=join('images', 'alien_dog.png'), *args, **kwargs)
         # self.attack_pattern = BasicAttack(batch=batch)
         # self.attack_pattern = RainAttack(batch=batch)
-        self.attack_pattern = PinwheelAttack(batch=batch)
+        self.attack_pattern = RainAttack(batch=batch)
 
 
 class AlienBlob(Enemy):
-    health = 60
+    health = 100
 
     def __init__(self, batch, *args, **kwargs):
         super().__init__(src=join('images', 'alien_blob.png'), *args, **kwargs)
         # self.attack_pattern = BasicAttack(batch=batch)
         # self.attack_pattern = RainAttack(batch=batch)
-        self.attack_pattern = RainAttack(batch=batch)
+        self.attack_pattern = PinwheelAttack(batch=batch)
 
 
 class AlienEnemy(Enemy):
@@ -164,4 +166,4 @@ class AlienEnemy(Enemy):
     #     super().draw()
 
 
-enemies = [AlienShip, AlienDog, AlienBlob, AlienEnemy]
+enemies = [AlienShip, AlienDog, AlienBlob]

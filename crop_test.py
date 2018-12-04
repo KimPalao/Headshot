@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 from math import pi
 
 if __name__ == '__main__':
-    p = Projectile(src='projectiles/dull_knife.png')
+    p = Projectile(src='images/meteor_1.png')
     images = 24
     divisor = 6
     ratio = pi/divisor
@@ -11,7 +11,7 @@ if __name__ == '__main__':
         plt.subplot(6, 4, i+1)
         p.rotate(ratio)
         plt.imshow(p.np)
-        plt.title(f'{i}pi/{images}')
+        plt.title(f'{i+1}pi/{images/2}')
         plt.xticks([])
         plt.yticks([])
     plt.show()

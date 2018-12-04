@@ -54,16 +54,6 @@ class GameInterface(Interface):
         window = system.get_window()
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        # background = load('images/background.png')
-        # self.background_sprite = Sprite(background)
-        # self.background_sprite.image.anchor_x = self.background_sprite.image.width / 2
-        # self.background_sprite.image.anchor_y = self.background_sprite.image.height / 2
-        # foreground = load('images/foreground.png')
-        # self.foreground_sprite = Sprite(foreground)
-        # self.foreground_sprite.image.anchor_x = self.foreground_sprite.image.width / 2
-        # self.foreground_sprite.image.anchor_y = self.foreground_sprite.image.height / 2
-        # self.foreground_sprite.scale = 1.3
-
         base_path = os.path.join('images', 'space_background_pack', 'layers')
 
         self.background = load(os.path.join(base_path, 'parallax-space-background.png'))
@@ -78,24 +68,44 @@ class GameInterface(Interface):
         self.ring_planet_sprite.y = 100
         stars = load(os.path.join(base_path, 'parallax-space-stars.png'))
         self.stars_sprite = Sprite(stars)
-
-        self.face_cascade = cv.CascadeClassifier('venv/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
-        self.facecam = Facecam(face_cascade=self.face_cascade).start()
-        # img = self.facecam.read()
-        self.aii = ArrayInterfaceImage(self.facecam.read(), 'BGR')
-        self.image = self.aii.texture
-        self.player = Player(src='images/ufo.png')
-        # self.player.take_damage(99)
-        self.border = Rectangle(width=self.image.width + 10, height=self.image.height + 10, color=(0, 0, 0, 127))
-        self.player.scale = 1.2
-        self.batch = Batch()
-        self.projectiles: List[Projectile] = []
         self.scheduled_functions = (
             (self.randomize_projectiles, 2),
             (self.check_direction, 1 / 120),
             (self.generate_powerup, 20)
         )
-        window.push_handlers(self.facecam)
+
+        if config.get_config('control') == 1:
+            self.face_cascade = cv.CascadeClassifier(
+                'venv/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
+            self.facecam = Facecam(face_cascade=self.face_cascade).start()
+            self.aii = ArrayInterfaceImage(self.facecam.read(), 'BGR')
+            self.image = self.aii.texture
+
+            @self.facecam.event('on_face_move')
+            def follow_face(x, y, width, height):
+                # Need to flip things first to work
+                x = self.image.width - x
+                y = self.image.height - y
+                new_x = self.border.x + x - width // 2
+                new_y = self.border.y + y - height // 2
+                self.player.move(new_x, new_y)
+
+            self.scheduled_functions = (
+                (self.randomize_projectiles, 2),
+                (self.generate_powerup, 20),
+            )
+
+            window.push_handlers(self.facecam)
+
+        self.player = Player(src='images/ufo.png', background=(255, 255, 255, 255))
+        self.border = Rectangle(
+            width=(500 if not self.image else self.image.width) + 10,
+            height=(500 if not self.image else self.image.height) + 10,
+            color=(0, 0, 0, 127)
+        )
+        self.player.scale = 1.2
+        self.batch = Batch()
+        self.projectiles: List[Projectile] = []
         window.push_handlers(self.keys)
 
         def pause_game(symbol, modifiers):
@@ -118,7 +128,7 @@ class GameInterface(Interface):
 
     def generate_enemy(self, dt):
         enemy_index = config.get_config('enemy')
-        if enemy_index > len(enemies):
+        if enemy_index > len(enemies) - 1:
             return system.get_window().load_interface(WinInterface())
 
         window = system.get_window()
@@ -146,23 +156,15 @@ class GameInterface(Interface):
         self.far_planet_sprite.x = window.width - self.far_planet_sprite.width
         self.far_planet_sprite.y = window.height - self.far_planet_sprite.height
 
-        self.image.x = (window.width - self.image.width) / 2
-        self.image.y = (window.height - self.image.height) / 2
+        if self.image:
+            self.image.x = (window.width - self.image.width) / 2
+            self.image.y = (window.height - self.image.height) / 2
         # self.border.x = (window.width - self.border.width) / 2
         self.border.x = window.width / 2 * 0.3
         self.border.y = (window.height - self.border.height) / 2
 
         self.generate_powerup(0)
         self.player.move(x=window.width / 2 * 0.3, y=window.height / 2)
-
-        @self.facecam.event('on_face_move')
-        def follow_face(x, y, width, height):
-            # Need to flip things first to work
-            x = self.image.width - x
-            y = self.image.height - y
-            new_x = self.border.x + x - width // 2
-            new_y = self.border.y + y - height // 2
-            self.player.move(new_x, new_y)
 
     def on_draw(self):
         self.animate_background()
@@ -172,10 +174,11 @@ class GameInterface(Interface):
         self.ring_planet_sprite.draw()
         self.stars_sprite.draw()
         self.border.draw()
-        img = self.facecam.read()
-        img = cv.flip(img, -1)
-        self.image.blit(self.border.x, self.border.y, 0)
-        self.aii.view_new_array(img)
+        if self.facecam:
+            img = self.facecam.read()
+            img = cv.flip(img, -1)
+            self.image.blit(self.border.x, self.border.y, 0)
+            self.aii.view_new_array(img)
         # self.fps_display.draw()
         self.player.draw()
         self.batch.draw()
@@ -229,7 +232,7 @@ class GameInterface(Interface):
             self.enemy.attack_pattern.generate()
 
     def check_direction(self, dt):
-        unit = 10
+        unit = 500 * dt
         if self.keys[key.DOWN]:
             if self.player.get_bot_bound() - unit >= self.border.y:
                 self.player.move(self.player.x, self.player.y - unit)
@@ -253,6 +256,7 @@ class GameInterface(Interface):
 
     def clean(self):
         self.enemy.clean()
-        self.facecam.clean()
+        if self.facecam:
+            self.facecam.clean()
         print(f'Deleting {self}')
         super().clean()

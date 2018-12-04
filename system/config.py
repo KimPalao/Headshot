@@ -15,4 +15,7 @@ def set_config(key, value):
 
 
 def get_config(key):
-    return config[key]
+    try:
+        return config[key]
+    except IndexError:  # If for some reason it doesn't exist
+        return None

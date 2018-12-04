@@ -1,6 +1,7 @@
 from typing import Callable
 
 import pyglet
+from pyglet.graphics import Batch, Group
 from pyglet.text.caret import Caret
 from pyglet.text.document import FormattedDocument
 from pyglet.text.layout import IncrementalTextLayout
@@ -14,15 +15,29 @@ class TextBox(Focusable, Caret, Hoverable):
     underline: Rectangle = None
     _on_enter: Callable = None
     ignore_enter: bool = False
+    style: dict = {}
 
-    def __init__(self, width, height=0, multiline=False, dpi=None,
-                 batch=None, group=None, wrap_lines=True, x=0, y=0, underlined=True, caret_color=(0, 0, 0)):
+    def __init__(self, width: int, height: int = 0, multiline: bool = False, dpi: object = None,
+                 batch: Batch = None, group: Group = None, wrap_lines: bool = True, x: int = 0, y: int = 0,
+                 underlined: bool = True, caret_color: tuple = (0, 0, 0),
+                 numbers_only: bool = False, font_name=None, font_size=None, font_color=(255, 255, 255, 2555), max_chars=0) -> None:
         self.document = FormattedDocument()
         self.layout = IncrementalTextLayout(self.document, width, height, multiline, dpi,
                                             batch, group, wrap_lines)
+        self.numbers_only = numbers_only
+        self.style['color'] = font_color
+        self.max_chars = max_chars
+        if font_name:
+            self.style['font_name'] = font_name
+        if font_size:
+            self.style['font_size'] = font_size
+        self.reset_style()
         if not height:
             # If the dev didn't specify a height, make the height equal to the height of the font
-            font = pyglet.font.load(self.document.get_style('font'), self.document.get_style('font_size'))
+            font = pyglet.font.load(
+                font_name or self.document.get_style('font'),
+                font_size or self.document.get_style('font_size')
+            )
             self.height = font.ascent - font.descent
         self._hover_cursor = self.get_window().CURSOR_TEXT
         super().__init__(self.layout, color=caret_color)
@@ -38,7 +53,7 @@ class TextBox(Focusable, Caret, Hoverable):
             )
 
     def reset_style(self):
-        self.document.set_style(0, len(self.document.text), {'color': (255, 255, 255, 255)})
+        self.document.set_style(0, len(self.document.text), self.style)
 
     @property
     def x(self):
@@ -89,17 +104,23 @@ class TextBox(Focusable, Caret, Hoverable):
         if self.underline:
             self.underline.draw()
 
-    def on_text(self, text):
+    def on_text(self, text: str):
         # Only type inside when the user is focused on the textbox
+        # print(text)
         if not self.focused:
             return
         if ord(text) == 13:
             if self.ignore_enter:  # Enter
                 self.ignore_enter = False
+                return
             else:
                 return self.on_enter()
-
+        # if self.max_chars and len(self.value) >= self.max_chars:
+        #         return
+        # if self.numbers_only and not text.isnumeric():
+        #     return
         res = super().on_text(text)
+        print('res', res, 'text', text)
         self.reset_style()
         return res
 
@@ -116,6 +137,7 @@ class TextBox(Focusable, Caret, Hoverable):
     @value.setter
     def value(self, val):
         self.document.text = val
+        self.reset_style()
 
     @property
     def on_enter(self):

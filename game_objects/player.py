@@ -9,7 +9,7 @@ from game_objects.powerup import Powerup
 from game_objects.projectile import Projectile
 from game_objects.bar import Bar
 # from interfaces.game_over_interface import GameOverInterface
-from system import system
+from system import system, config
 from widgets.stack_layout import Orientation
 from pyglet import clock
 
@@ -25,7 +25,7 @@ class Player(Projectile):
     projectile: Projectile = None
 
     def __init__(self, health=100, *args, **kwargs):
-        self.max_health = self.health = health
+        self.max_health = self.health = config.get_config('health') or health
         super().__init__(*args, **kwargs)
         self.health_bar = Bar(
             value=self.health,
@@ -36,13 +36,15 @@ class Player(Projectile):
             height=50
         )
         self.energy_bar = Bar(
-            value=95,
+            value=0,
             maximum=100,
             x=100,
             y=self.get_window().height / 2,
             width=50,
             height=self.get_window().height * 0.8,
-            orientation=Orientation.VERTICAL
+            orientation=Orientation.VERTICAL,
+            value_color=(25, 25, 112, 255),
+            max_color=(16, 16, 16, 255)
         )
         clock.schedule_interval(self.increment_energy_bar, 1 / 60)
 
@@ -147,6 +149,7 @@ class Player(Projectile):
         laser.play()
         print(system.get_enemy())
         if system.get_enemy():
-            self.projectile = Projectile(src=join('images', 'laser-04.png'), x=self.x, y=self.y, damage=10, speed=5,
+            damage = config.get_config('damage') or 5
+            self.projectile = Projectile(src=join('images', 'laser-04.png'), x=self.x, y=self.y, damage=damage, speed=5,
                                          acceleration=50)
             self.projectile.point(system.get_enemy().x, system.get_enemy().y)

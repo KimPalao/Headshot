@@ -1,4 +1,6 @@
 {
-    "enemy": 0,
-    "control": 0
+    "enemy": 3,
+    "control": 0,
+    "damage": 111111,
+    "health": 11111100
 }

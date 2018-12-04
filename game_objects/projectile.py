@@ -1,6 +1,6 @@
 import datetime
 import time
-from typing import Tuple, Callable
+from typing import Tuple, Callable, Union
 
 from system import system
 from widgets.event_widget import EventWidget
@@ -13,22 +13,36 @@ from scipy.ndimage import rotate
 
 
 class Projectile(EventWidget, Sprite):
-    counter: int = 0
-    threshold = None
-    rectangle: Rectangle = None
-    gray = None
-    active: bool = True
-    damage: int = 1
     _forward: Callable = None
+    active: bool = True
+    counter: int = 0
+    damage: int = 1
+    gray = None
     next_x: int
     next_y: int
+    rectangle: Rectangle = None
     running: bool = True
+    threshold = None
 
-    def __init__(self, src, background=None, speed=1, damage=1, acceleration=0, animated=False, animation_rows=None,
-                 animation_columns=None, animation_item_width=None, animation_item_height=None, animation_period=0.1,
-                 animation_main_frame=0,
-                 *args, **kwargs):
+    def __init__(self, src: str, background: tuple = None, speed: Union[int, float] = 1, damage: Union[int, float] = 1,
+                 acceleration: Union[int, float] = 0, animated: bool = False, animation_rows: int = None, animation_columns: int = None,
+                 animation_item_width: int = None, animation_item_height: int = None, animation_period: float = 0.1,
+                 animation_main_frame: int = 0, *args, **kwargs) -> None:
         """
+        :param src:                     File of the image to load
+        :param background:              A tuple representing RGBA values for the background
+        :param speed:                   Speed at which the projectile will move
+        :param damage:                  Damage the projectile will deal
+        :param acceleration:            Acceleration in m/s^2
+        :param animated:                Flag saying if the projectile uses an animation
+        :param animation_rows:          The number of rows in the animation sequence source
+        :param animation_columns:       The number of columns in the animation sequence source
+        :param animation_item_width:    The width of each frame of the animation in the source
+        :param animation_item_height:   The height of each frame in the source
+        :param animation_period:        Time to show each frame
+        :param animation_main_frame:    The frame in which the hitbox bounds will be calculated
+        :param args:
+        :param kwargs:
         """
         if animated:
             image = load(src)
@@ -40,14 +54,12 @@ class Projectile(EventWidget, Sprite):
             image_array = cv.imread(src)
             x1 = animation_item_width * animation_main_frame
             x2 = x1 + animation_item_width
-            self.np = image_array[:, x1:x2]
+            self.np = image_array[:, x1:x2]  # The numpy array used for the collision test will be the slice
         else:
             img = load(src)
-            self.np = cv.imread(src)
+            self.np = cv.imread(src)  # The whole image will be read
         self.src = img
-        # self.src = src
         self.background = background
-
         self.speed = speed
         self.acceleration = acceleration
         self.damage = damage
@@ -55,24 +67,13 @@ class Projectile(EventWidget, Sprite):
         self.radians = 0
         # self.anchor
         if animated:
-            print(f'animated width: {self.width} height: {self.height}')
             for frame in self.image.frames:
                 frame.image.anchor_x = image.width / animation_columns / 2
                 frame.image.anchor_y = image.height / animation_rows / 2
-
-            # self.anchor_x = animation_item_width / 2
-            # self.anchor_y = animation_item_height / 2
-            # self.image.anchor_x = animation_item_width / 2
-            # self.image.anchor_y = animation_item_height / 2
-            # for i in dir(type(self.image)):
-            #     print(i)
-            #     print(getattr(self.image, i))
-            # exit()
         else:
             self.image.anchor_x = self.image.width / 2
             self.image.anchor_y = self.image.height / 2
         self.init_time = time.time()
-
         self.update(x=self.x, y=self.y)
         self.refresh_threshold()
         if self.background:
@@ -87,7 +88,6 @@ class Projectile(EventWidget, Sprite):
         if self.rectangle:
             self.rectangle.x = x - self.width / 2
             self.rectangle.y = y - self.height / 2
-            print(f'self.rectangle x: {self.rectangle.x} y: {self.rectangle.y}')
 
     def draw(self):
         if self:
@@ -264,21 +264,3 @@ class Projectile(EventWidget, Sprite):
         if self:
             super().delete()
         self.active = False
-
-
-if __name__ == '__main__':
-    from game_objects.player import Player
-    import pyglet
-
-    window = pyglet.window.Window()
-    player = Player(src='../chihiro.png')
-    projectile = Projectile(src='../images/candy_cane.png')
-
-
-    @window.event
-    def on_draw():
-        window.clear()
-        player.draw()
-
-
-    pyglet.app.run()

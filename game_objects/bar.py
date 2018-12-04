@@ -7,7 +7,18 @@ from widgets.stack_layout import Orientation
 class Bar:
     max: int
 
-    def __init__(self, value, maximum, width, height, x, y, orientation=Orientation.HORIZONTAL):
+    def __init__(
+            self,
+            value: int,
+            maximum: int,
+            width: int,
+            height: int,
+            x: int,
+            y: int,
+            orientation: Orientation = Orientation.HORIZONTAL,
+            value_color: tuple = (1, 68, 33, 255),  # UP Maroon
+            max_color: tuple = (123, 17, 19, 255)  # UP Forest Green
+    ) -> None:
         self.value = value
         self.max = maximum
         self.width = width
@@ -20,7 +31,7 @@ class Bar:
             y=(self.y - self.height / 2),
             width=self.width,
             height=self.height,
-            color=(123, 17, 19, 255)  # UP Maroon
+            color=max_color  # UP Maroon
             # color=(255, 0, 18, 255)
         )
         self.rectangle = Rectangle(
@@ -28,7 +39,7 @@ class Bar:
             y=(self.y - self.height / 2),
             width=self.width,
             height=self.height,
-            color=(1, 68, 33, 255)  # UP Forest Green
+            color=value_color  # UP Forest Green
             # color=(0, 179, 44, 255)
         )
         schedule_interval(self.update_bar, 1 / 30)

@@ -1,6 +1,7 @@
 from pyglet.text import Label
 
 import menus
+from audio import win
 from fonts.fonts import press_start_2p
 from interfaces.interface import Interface
 from system import system
@@ -15,10 +16,13 @@ class WinInterface(Interface):
         self.game_over_label.anchor_x = 'center'
         self.game_over_label.anchor_y = 'center'
         self.game_over_menu = menus.game_over_menu.GameOverMenu()
+        self.game_over_menu.items.pop(0)
+        self.game_over_menu.labels.pop(0)
         self.resize()
         window = system.get_window()
         window.on_key_press = self.game_over_menu.on_key_press
         self.game_over_menu.focused = True
+        win.play()
 
     def on_draw(self):
         self.game_over_label.draw()

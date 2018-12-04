@@ -60,3 +60,13 @@ explosion = media.StaticSource(
         )
     )
 )
+
+win = media.StaticSource(
+    media.load(
+        join(
+            'sound_FX',
+            'freesound.org',
+            'win.wav'
+        )
+    )
+)
