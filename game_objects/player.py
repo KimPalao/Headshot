@@ -1,5 +1,6 @@
 import time
 from os.path import join
+from typing import Callable
 
 import cv2 as cv
 import numpy as np
@@ -23,6 +24,7 @@ class Player(Projectile):
     health_bar: Bar
     energy_bar: Bar
     projectile: Projectile = None
+    on_move: Callable = None
 
     def __init__(self, health=100, *args, **kwargs):
         self.max_health = self.health = config.get_config('health') or health
@@ -79,13 +81,15 @@ class Player(Projectile):
             else:  # x1 >= px2
                 # The player is on the right of the projectile
                 if x2 < px2:
-                    width = x2 - px1
-                    left_vertical, right_vertical = x1, px2
+                    width = projectile.width
+                    left_vertical, right_vertical = px1, px2
                 else:  # x2 >= px2
                     width = x2 - px1
                     left_vertical, right_vertical = px1, x2
             if y1 < py1:
+                # The Player is on the bottom of the projectile
                 if y2 < py2:
+                    # The projectile overlaps and overflows
                     height = py2 - y1
                     top_horizontal, bottom_horizontal = projectile.get_top_bound(), y1
                 else:
@@ -104,6 +108,7 @@ class Player(Projectile):
             img1 = empty.copy()
             img2 = empty.copy()
             x1, y1, x2, y2 = projectile.get_bounds(left_vertical, top_horizontal)
+            print(left_vertical, x1, x2)
             img1[y1:y2, x1:x2] = projectile.threshold
 
             x1, y1, x2, y2 = self.get_bounds(left_vertical, top_horizontal)
@@ -153,3 +158,8 @@ class Player(Projectile):
             self.projectile = Projectile(src=join('images', 'laser-04.png'), x=self.x, y=self.y, damage=damage, speed=5,
                                          acceleration=50)
             self.projectile.point(system.get_enemy().x, system.get_enemy().y)
+
+    def move(self, x, y):
+        super().move(x, y)
+        if self.on_move:
+            self.on_move(x, y)

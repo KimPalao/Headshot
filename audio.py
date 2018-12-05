@@ -70,3 +70,33 @@ music = media.StaticSource(
         )
     )
 )
+
+win_music = media.StaticSource(
+    media.load(
+        join(
+            'sound_FX',
+            'freesound.org',
+            'triumph.wav'
+        )
+    )
+)
+
+enemy_hit = media.StaticSource(
+    media.load(
+        join(
+            'sound_FX',
+            'freesound.org',
+            'hit.wav'
+        )
+    )
+)
+
+enemy_die = media.StaticSource(
+    media.load(
+        join(
+            'sound_FX',
+            'freesound.org',
+            'die.wav'
+        )
+    )
+)

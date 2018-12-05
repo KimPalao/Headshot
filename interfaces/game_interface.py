@@ -211,7 +211,8 @@ class GameInterface(Interface):
 
     def generate_powerup(self, dt):
         window = system.get_window()
-        roll = random.randint(1, 10)
+        # roll = random.randint(1, 10)
+        roll = 1
         if roll <= 3:  # 30% chance of getting a powerup
             powerup = random.choice(powerups)(batch=self.batch)
             x = random.randint(self.border.x, self.border.x + self.border.width)

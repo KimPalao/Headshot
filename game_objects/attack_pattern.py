@@ -72,7 +72,7 @@ class BasicAttack(AttackPattern):
 
 class PinwheelAttack(AttackPattern):
     projectile_per_attack = 4
-    base_damage = 5
+    base_damage = 15
     base_speed = 1
     base_acceleration = 2
     projectiles: List[Projectile] = []

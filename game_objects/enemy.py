@@ -4,14 +4,14 @@ from typing import Callable
 
 from pyglet.text import Label
 # from pyglet import clock
-
+from audio import enemy_hit, enemy_die
 from game_objects.attack_pattern import AttackPattern
 from game_objects.bar import Bar
 from game_objects.attack_pattern import BasicAttack, PinwheelAttack, RainAttack
 from game_objects.projectile import Projectile
 from pyglet import clock
 
-from system import system
+from system import system, config
 
 
 class Enemy(Projectile):
@@ -22,6 +22,13 @@ class Enemy(Projectile):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        stats = config.get_config('enemy_stats')[self.__class__.__name__]
+        self.health = stats['health']
+        self.attack_pattern.base_damage = stats['damage']
+        self.attack_pattern.base_speed = stats['speed']
+        self.attack_pattern.base_acceleration = stats['acceleration']
+        self.attack_pattern.projectile_per_attack = stats['projectiles']
+
         self.health_bar = Bar(
             value=self.health,
             maximum=self.health,
@@ -90,6 +97,7 @@ class Enemy(Projectile):
         actual_damage = damage
         self.health -= actual_damage
         self.update_health_bar()
+        enemy_hit.play()
         if self.health <= 0:
             self.die()
         return actual_damage
@@ -100,6 +108,7 @@ class Enemy(Projectile):
     def die(self):
         self.running = False
         print(f'Opacity: {self.opacity}')
+        enemy_die.play()
 
         def fade(dt):
             self.opacity -= dt * 255
@@ -119,43 +128,32 @@ class AlienShip(Enemy):
     health = 20
 
     def __init__(self, batch, *args, **kwargs):
-        super().__init__(src=join('images', 'alien_ship.png'), *args, **kwargs)
-        # self.attack_pattern = BasicAttack(batch=batch)
-        # self.attack_pattern = RainAttack(batch=batch)
         self.attack_pattern = BasicAttack(batch=batch)
+        super().__init__(src=join('images', 'alien_ship.png'), *args, **kwargs)
 
 
 class AlienDog(Enemy):
     health = 50
 
     def __init__(self, batch, *args, **kwargs):
-        super().__init__(src=join('images', 'alien_dog.png'), *args, **kwargs)
-        # self.attack_pattern = BasicAttack(batch=batch)
-        # self.attack_pattern = RainAttack(batch=batch)
         self.attack_pattern = RainAttack(batch=batch)
+        super().__init__(src=join('images', 'alien_dog.png'), *args, **kwargs)
 
 
 class AlienBlob(Enemy):
     health = 100
 
     def __init__(self, batch, *args, **kwargs):
-        super().__init__(src=join('images', 'alien_blob.png'), *args, **kwargs)
-        # self.attack_pattern = BasicAttack(batch=batch)
-        # self.attack_pattern = RainAttack(batch=batch)
         self.attack_pattern = PinwheelAttack(batch=batch)
+        super().__init__(src=join('images', 'alien_blob.png'), *args, **kwargs)
 
 
 class AlienEnemy(Enemy):
     health = 100
 
     def __init__(self, batch, *args, **kwargs):
-        super().__init__(src=join('images', 'alien.png'), *args, **kwargs)
-        # self.attack_pattern = BasicAttack(batch=batch)
-        # self.attack_pattern = RainAttack(batch=batch)
         self.attack_pattern = RainAttack(batch=batch)
-
-    # def draw(self):
-    #     super().draw()
+        super().__init__(src=join('images', 'alien.png'), *args, **kwargs)
 
 
 enemies = [AlienShip, AlienDog, AlienBlob]

@@ -34,7 +34,7 @@ class WinInterface(Interface):
         #     ),
         #     streaming=False
         # ).play()
-        # win.play()
+        audio.win_music.play()
 
     def on_draw(self):
         self.game_over_label.draw()

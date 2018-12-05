@@ -143,18 +143,7 @@ class Sprite {
 
     }
 
-    // while (1)
-    //     objects.forEach(object => object.draw());
-    // setInterval(
-    //     () => {
-    //         for (let object of objects) {
-    //             if (object.image.complete)
-    //                 object.draw();
-    //         }
-    //     }, 1
-    // );
-
-    loop()
+   loop()
 
 })
 (document);

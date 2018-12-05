@@ -25,7 +25,8 @@ class Projectile(EventWidget, Sprite):
     threshold = None
 
     def __init__(self, src: str, background: tuple = None, speed: Union[int, float] = 1, damage: Union[int, float] = 1,
-                 acceleration: Union[int, float] = 0, animated: bool = False, animation_rows: int = None, animation_columns: int = None,
+                 acceleration: Union[int, float] = 0, animated: bool = False, animation_rows: int = None,
+                 animation_columns: int = None,
                  animation_item_width: int = None, animation_item_height: int = None, animation_period: float = 0.1,
                  animation_main_frame: int = 0, *args, **kwargs) -> None:
         """
@@ -186,12 +187,17 @@ class Projectile(EventWidget, Sprite):
         return self.np.shape[0]
 
     def check_for_rectangle_collision(self, p):
-        px1, py1, px2, py2 = p.get_coordinates()
-        x1, y1, x2, y2 = self.get_coordinates()
-        return (x1 <= px1 <= x2 and y1 <= py1 <= y2) or \
-               (x1 <= px2 <= x2 and y1 <= py1 <= y2) or \
-               (x1 <= px1 <= x2 and y1 <= py2 <= y2) or \
-               (x1 <= px2 <= x2 and y1 <= py2 <= y2)
+        w = (self.width + p.width) / 2
+        h = (self.height + p.height) / 2
+        dx = (self.x - p.x)
+        dy = self.y - p.y
+        return abs(dx) <= w and abs(dy) <= h
+        # px1, py1, px2, py2 = p.get_coordinates()
+        # x1, y1, x2, y2 = self.get_coordinates()
+        # return (x1 <= px1 <= x2 and y1 <= py1 <= y2) or \
+        #        (x1 <= px2 <= x2 and y1 <= py1 <= y2) or \
+        #        (x1 <= px1 <= x2 and y1 <= py2 <= y2) or \
+        #        (x1 <= px2 <= x2 and y1 <= py2 <= y2)
 
     def point(self, x: int, y: int) -> None:
         distance = sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
