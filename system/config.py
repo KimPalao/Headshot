@@ -6,10 +6,33 @@ try:
 except json.decoder.JSONDecodeError:
     # Restore the original version of the config
     config = {
-        "enemy": 0,
+        "enemy": 2,
         "control": 0,
-        "damage": 100,
+        "damage": 10,
         "health": 100,
+        "enemy_stats": {
+            "AlienShip": {
+                "health": 20,
+                "damage": 10,
+                "speed": 5,
+                "acceleration": 5,
+                "projectiles": 1
+            },
+            "AlienDog": {
+                "health": 50,
+                "damage": 10,
+                "speed": 5,
+                "acceleration": 5,
+                "projectiles": 5
+            },
+            "AlienBlob": {
+                "health": 100,
+                "damage": 15,
+                "speed": 1,
+                "acceleration": 2,
+                "projectiles": 4
+            }
+        }
     }
     with open('config.json', 'w') as config_file:
         json.dump(config, config_file, indent=2)
