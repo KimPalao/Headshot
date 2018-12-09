@@ -215,7 +215,7 @@ class GameInterface(Interface):
         roll = 1
         if roll <= 3:  # 30% chance of getting a powerup
             powerup = random.choice(powerups)(batch=self.batch)
-            x = random.randint(self.border.x, self.border.x + self.border.width)
+            x = random.randint(int(self.border.x), int(self.border.x + self.border.width))
             powerup.move(x=x, y=window.height)
 
             @powerup.movement
